@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <ProgressBar
@@ -8,11 +7,25 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"/>
-    <TextView
-        android:id="@+id/tvErrorLoadUsers"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/llErrorLoadUsers"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"/>
+        android:orientation="vertical"
+        android:layout_gravity="center">
+        <Button
+            android:id="@+id/btnRetryLoadUsers"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Retry"
+            android:layout_gravity="center"/>
+        <TextView
+            android:id="@+id/tvErrorLoadUsers"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"/>
+        </LinearLayout>
+
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/srlUsers"
         android:layout_width="match_parent"
@@ -23,4 +36,4 @@
             android:layout_height="match_parent"
             android:scrollbars="vertical"/>
     </android.support.v4.widget.SwipeRefreshLayout>
-</LinearLayout>
+</FrameLayout>

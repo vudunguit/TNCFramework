@@ -13,5 +13,5 @@ public interface BaseView {
 
     void hideRetry();
 
-    void showError();
+    void showError(String error);
 }
