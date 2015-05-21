@@ -8,4 +8,10 @@ public interface BaseView {
     void showLoading();
 
     void hideLoading();
+
+    void showRetry();
+
+    void hideRetry();
+
+    void showError();
 }

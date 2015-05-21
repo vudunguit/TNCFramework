@@ -13,6 +13,7 @@ import butterknife.ButterKnife;
 import vn.tnc.core.BaseApp;
 import vn.tnc.core.R;
 import vn.tnc.core.di.components.ApplicationComponent;
+import vn.tnc.core.di.modules.ActivityModule;
 
 
 public abstract class BaseActivity extends AppCompatActivity {
@@ -56,6 +57,9 @@ public abstract class BaseActivity extends AppCompatActivity {
         ButterKnife.inject(this);
     }
 
+    protected ActivityModule getActivityModule(){
+        return new ActivityModule(this);
+    }
 
 
 }

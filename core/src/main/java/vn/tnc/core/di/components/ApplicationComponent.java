@@ -12,6 +12,5 @@ import vn.tnc.core.di.modules.ApplicationModule;
 @Singleton
 @Component(modules = ApplicationModule.class)
 public interface ApplicationComponent {
-
     void inject(BaseActivity baseActivity);
 }
