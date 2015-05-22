@@ -3,6 +3,10 @@ package vn.tnc.tncframework.ui.activities;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 
+import com.squareup.otto.Bus;
+
+import javax.inject.Inject;
+
 import butterknife.InjectView;
 import vn.tnc.core.base.mvp.BaseActivity;
 import vn.tnc.core.base.navigator.FragmentNavigator;
@@ -22,6 +26,9 @@ public class UsersActivity extends BaseActivity implements HasComponent<UserComp
     private UserComponent userComponent;
     @InjectView(R.id.toolbar)
     Toolbar toolbar;
+
+    @Inject
+    Bus bus;
 
     @Override protected int layoutId() {
         return R.layout.activity_main;
@@ -49,6 +56,18 @@ public class UsersActivity extends BaseActivity implements HasComponent<UserComp
             fragmentNavigator.showScreen(new UserListFragment(), false);
         }
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        bus.register(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        bus.unregister(this);
     }
 
     @Override

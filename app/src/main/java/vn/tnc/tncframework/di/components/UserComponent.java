@@ -6,6 +6,7 @@ import vn.tnc.core.di.PerActivity;
 import vn.tnc.core.di.components.ActivityComponent;
 import vn.tnc.core.di.components.ApplicationComponent;
 import vn.tnc.core.di.modules.ActivityModule;
+import vn.tnc.tncframework.di.modules.UtilModule;
 import vn.tnc.tncframework.ui.fragments.UserDetailFragment;
 import vn.tnc.tncframework.ui.fragments.UserListFragment;
 
@@ -15,7 +16,7 @@ import vn.tnc.tncframework.ui.fragments.UserListFragment;
 @PerActivity
 @Component(
         dependencies = ApplicationComponent.class,
-        modules = ActivityModule.class
+        modules = {ActivityModule.class, UtilModule.class}
 )
 public interface UserComponent extends ActivityComponent{
 
