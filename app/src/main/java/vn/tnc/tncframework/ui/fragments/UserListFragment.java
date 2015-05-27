@@ -12,6 +12,8 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import javax.inject.Inject;
+
 import butterknife.InjectView;
 import vn.tnc.core.base.mvp.BaseFragment;
 import vn.tnc.tncframework.R;
@@ -34,6 +36,7 @@ public class UserListFragment extends BaseFragment implements UserListView{
     @InjectView(R.id.rvUsers)
     RecyclerView rvUsers;
 
+    @Inject
     UserListPresenter userListPresenter;
     @Override
     public void showLoading() {
@@ -76,10 +79,13 @@ public class UserListFragment extends BaseFragment implements UserListView{
     public void onResume() {
         super.onResume();
 
+        userListPresenter.resume();
     }
 
     @Override
     protected void onInjected() {
+        userListPresenter.setView(this);
+
         final StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         rvUsers.setLayoutManager(staggeredGridLayoutManager);
 

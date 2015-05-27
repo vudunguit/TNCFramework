@@ -1,6 +1,21 @@
 package vn.tnc.tncframework.presenter;
 
+import android.util.Log;
+
+import java.util.List;
+import java.util.Observer;
+
+import javax.inject.Inject;
+
+import rx.Observable;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
+import rx.subjects.PublishSubject;
 import vn.tnc.core.base.mvp.BasePresenter;
+import vn.tnc.data.api.ApiService;
+import vn.tnc.data.api.model.response.User;
 import vn.tnc.tncframework.ui.view.UserListView;
 
 /**
@@ -8,14 +23,58 @@ import vn.tnc.tncframework.ui.view.UserListView;
  */
 public class UserListPresenter implements BasePresenter{
 
+    private ApiService apiService;
     private UserListView userListView;
+    private Subscription subscription;
+    private final static String TAG = UserListPresenter.class.getSimpleName();
+
+    @Inject
+    public UserListPresenter(ApiService service){
+        this.apiService = service;
+    }
+
     public void setView(UserListView userListView){
         this.userListView = userListView;
     }
+
     @Override
     public void resume() {
+
         userListView.showLoading();
         userListView.hideRetry();
+
+        PublishSubject<List<User>> request = PublishSubject.create();
+
+        subscription = request.subscribe(new rx.Observer<List<User>>() {
+            @Override
+            public void onCompleted() {
+                Log.i(TAG, "subscribe onComplete");
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(List<User> users) {
+                Log.i(TAG, users.toString());
+            }
+        });
+
+        apiService.getListUser()
+
+                .flatMap(new Func1<List<User>, Observable<User>>() {
+                    @Override
+                    public Observable<User> call(List<User> users) {
+                        return Observable.from(users);
+                    }
+                })
+                .toList()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(request);
+
     }
 
     @Override
@@ -25,6 +84,6 @@ public class UserListPresenter implements BasePresenter{
 
     @Override
     public void destroy() {
-
+        subscription.unsubscribe();
     }
 }

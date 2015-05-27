@@ -1,14 +1,18 @@
 package vn.tnc.data.api;
 
+import com.google.gson.Gson;
 import com.squareup.okhttp.OkHttpClient;
+
+import javax.inject.Named;
+import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
 import retrofit.Endpoint;
 import retrofit.Endpoints;
 import retrofit.RestAdapter;
-import retrofit.client.Client;
 import retrofit.client.OkClient;
+import retrofit.converter.GsonConverter;
 
 /**
  * Created by USER on 5/25/2015.
@@ -16,30 +20,34 @@ import retrofit.client.OkClient;
 @Module
 public class ApiModule {
     public static final String GITHUB_API_BASE_URL = "https://api.github.com";
-    private static final String CLIENT_ID = "07111988";
-
+    /*
     @Provides
-    @ClientId
-    String provideClientId(){
-        return CLIENT_ID;
+    @Singleton
+    OkHttpClient provideClient(OkHttpClient client){
+        return client.clone();
     }
+    */
 
     @Provides
-    Client provideClient(OkHttpClient client){
-        return new OkClient(client);
-    }
-
-    @Provides
+    @Singleton
     Endpoint provideEndpoint(){
         return Endpoints.newFixedEndpoint(GITHUB_API_BASE_URL);
     }
 
     @Provides
-    RestAdapter provideRestAdapter(Endpoint endpoint, Client client, ApiHeader header){
+    @Singleton
+
+    RestAdapter provideRestAdapter(Endpoint endpoint, OkHttpClient client, Gson gson){
         return new RestAdapter.Builder()
-                .setClient(client)
+                .setClient(new OkClient(client))
                 .setEndpoint(endpoint)
-                .setRequestInterceptor(header)
+                .setConverter(new GsonConverter(gson))
                 .build();
+    }
+
+    @Provides
+    @Singleton
+    ApiService provideApiServer(RestAdapter restAdapter){
+        return restAdapter.create(ApiService.class);
     }
 }
