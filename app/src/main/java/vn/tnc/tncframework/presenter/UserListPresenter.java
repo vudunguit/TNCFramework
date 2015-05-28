@@ -40,34 +40,37 @@ public class UserListPresenter implements BasePresenter{
         Log.i(TAG, "resume");
         userListView.showLoading();
         userListView.hideRetry();
+
+        getListUser();
+    }
+
+    private void getListUser(){
         subscription = apiService.getListUser()
+            .subscribeOn(Schedulers.newThread())
+            .observeOn(AndroidSchedulers.mainThread())
+            .compose(RxHelper.<List<User>>applySchedulers())
+            .subscribe(new rx.Observer<List<User>>() {
+                @Override
+                public void onCompleted() {
+                    userListView.hideLoading();
+                    userListView.hideRetry();
+                }
 
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .compose(RxHelper.<List<User>>applySchedulers())
-                .subscribe(new rx.Observer<List<User>>() {
-                    @Override
-                    public void onCompleted() {
-                        userListView.hideLoading();
-                        userListView.hideRetry();
-                    }
+                @Override
+                public void onError(Throwable e) {
+                    e.printStackTrace();
+                    userListView.hideLoading();
+                    userListView.showRetry();
+                    userListView.showError("Failed load data");
+                }
 
-                    @Override
-                    public void onError(Throwable e) {
-                        e.printStackTrace();
-                        userListView.hideLoading();
-                        userListView.showRetry();
-                        userListView.showError("Failed load data");
-                    }
+                @Override
+                public void onNext(List<User> users) {
+                    Log.i(TAG, "List size: " + users.size());
+                    userListView.renderUserList(users);
 
-                    @Override
-                    public void onNext(List<User> users) {
-                        Log.i(TAG, "List size: " + users.size());
-                        userListView.renderUserList(users);
-
-                    }
-                });
-
+                }
+            });
     }
 
     @Override

@@ -22,17 +22,17 @@ import vn.tnc.tncframework.R;
  */
 public class UsersAdapter extends RecyclerTypeAdapter<User, UsersAdapter.ViewHolder>{
 
+    private LayoutInflater layoutInflater;
+    private Picasso picasso;
     @Inject
-    LayoutInflater layoutInflater;
-
-
-
-    @Inject
-    public UsersAdapter(){}
+    public UsersAdapter(LayoutInflater layoutInflater, Picasso picasso){
+        this.layoutInflater = layoutInflater;
+        this.picasso = picasso;
+    }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new ViewHolder(layoutInflater.inflate(R.layout.item_user, parent, false));
+        return new ViewHolder(layoutInflater.inflate(R.layout.item_user, parent, false), picasso);
     }
 
     @Override
@@ -46,16 +46,16 @@ public class UsersAdapter extends RecyclerTypeAdapter<User, UsersAdapter.ViewHol
         @InjectView(R.id.tvLogin)
         TextView tvLogin;
 
-        @Inject
-        Picasso picasso;
-        public ViewHolder(View itemView) {
+        private Picasso picasso;
+        public ViewHolder(View itemView, Picasso picasso) {
             super(itemView);
+            this.picasso = picasso;
             ButterKnife.inject(this, itemView);
         }
 
         public void bind(User user) {
             tvLogin.setText(user.login);
-            picasso.load(user.avatar_url).error(R.drawable.ic_avatar_default).into(ivAvatar);
+            picasso.load(user.avatar_url).placeholder(R.drawable.ic_avatar_default).error(R.drawable.ic_avatar_default).into(ivAvatar);
         }
 
     }
