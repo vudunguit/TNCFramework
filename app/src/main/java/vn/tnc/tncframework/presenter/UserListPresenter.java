@@ -3,19 +3,17 @@ package vn.tnc.tncframework.presenter;
 import android.util.Log;
 
 import java.util.List;
-import java.util.Observer;
 
 import javax.inject.Inject;
 
 import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
-import rx.subjects.PublishSubject;
 import vn.tnc.core.base.mvp.BasePresenter;
 import vn.tnc.data.api.ApiService;
 import vn.tnc.data.api.model.response.User;
+import vn.tnc.data.rx.RxHelper;
 import vn.tnc.tncframework.ui.view.UserListView;
 
 /**
@@ -39,41 +37,36 @@ public class UserListPresenter implements BasePresenter{
 
     @Override
     public void resume() {
-
+        Log.i(TAG, "resume");
         userListView.showLoading();
         userListView.hideRetry();
+        subscription = apiService.getListUser()
 
-        PublishSubject<List<User>> request = PublishSubject.create();
-
-        subscription = request.subscribe(new rx.Observer<List<User>>() {
-            @Override
-            public void onCompleted() {
-                Log.i(TAG, "subscribe onComplete");
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onNext(List<User> users) {
-                Log.i(TAG, users.toString());
-            }
-        });
-
-        apiService.getListUser()
-
-                .flatMap(new Func1<List<User>, Observable<User>>() {
-                    @Override
-                    public Observable<User> call(List<User> users) {
-                        return Observable.from(users);
-                    }
-                })
-                .toList()
-                .subscribeOn(Schedulers.io())
+                .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(request);
+                .compose(RxHelper.<List<User>>applySchedulers())
+                .subscribe(new rx.Observer<List<User>>() {
+                    @Override
+                    public void onCompleted() {
+                        userListView.hideLoading();
+                        userListView.hideRetry();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        userListView.hideLoading();
+                        userListView.showRetry();
+                        userListView.showError("Failed load data");
+                    }
+
+                    @Override
+                    public void onNext(List<User> users) {
+                        Log.i(TAG, "List size: " + users.size());
+                        userListView.renderUserList(users);
+
+                    }
+                });
 
     }
 

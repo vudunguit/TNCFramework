@@ -1,6 +1,7 @@
 package vn.tnc.core.di.modules;
 
 import android.app.Activity;
+import android.view.LayoutInflater;
 
 import dagger.Module;
 import dagger.Provides;
@@ -22,5 +23,11 @@ public class ActivityModule {
     @PerActivity
     Activity provideActivity(){
         return this.activity;
+    }
+
+    @Provides
+    @PerActivity
+    public LayoutInflater provideLayoutInflater() {
+        return activity.getLayoutInflater();
     }
 }

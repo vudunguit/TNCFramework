@@ -12,13 +12,17 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import butterknife.InjectView;
 import vn.tnc.core.base.mvp.BaseFragment;
+import vn.tnc.data.api.model.response.User;
 import vn.tnc.tncframework.R;
 import vn.tnc.tncframework.presenter.UserListPresenter;
 import vn.tnc.tncframework.ui.activities.UsersActivity;
+import vn.tnc.tncframework.ui.adapters.UsersAdapter;
 import vn.tnc.tncframework.ui.view.UserListView;
 
 /**
@@ -38,6 +42,9 @@ public class UserListFragment extends BaseFragment implements UserListView{
 
     @Inject
     UserListPresenter userListPresenter;
+
+    @Inject
+    UsersAdapter usersAdapter;
     @Override
     public void showLoading() {
         pbLoading.setVisibility(View.VISIBLE);
@@ -64,8 +71,8 @@ public class UserListFragment extends BaseFragment implements UserListView{
     }
 
     @Override
-    public void renderUserList() {
-
+    public void renderUserList(List<User> users) {
+        usersAdapter.changeDataSet(users);
     }
 
     @Nullable
@@ -88,7 +95,7 @@ public class UserListFragment extends BaseFragment implements UserListView{
 
         final StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         rvUsers.setLayoutManager(staggeredGridLayoutManager);
-
+        rvUsers.setAdapter(usersAdapter);
     }
 
     @Override
