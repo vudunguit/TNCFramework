@@ -8,4 +8,11 @@
         <attr name="photoItemForeground" format="reference" />
         <attr name="photoItemForegroundBorderless" format="reference" />
     </declare-styleable>
+    <declare-styleable name="AspectRatioImageView">
+        <attr name="widthRatio" format="float"/>
+        <attr name="heightRatio" format="float"/>
+    </declare-styleable>
+    <declare-styleable name="ScrimInsetsView">
+    <attr name="insetForeground" format="reference|color"/>
+    </declare-styleable>
 </resources>

@@ -40,9 +40,10 @@ public class UserListPresenter implements BasePresenter{
         Log.i(TAG, "resume");
         userListView.showLoading();
         userListView.hideRetry();
-
         getListUser();
     }
+
+
 
     private void getListUser(){
         subscription = apiService.getListUser()

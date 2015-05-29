@@ -2,21 +2,26 @@ package vn.tnc.tncframework.ui.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.InjectView;
+import butterknife.OnClick;
 import vn.tnc.core.base.mvp.BaseFragment;
 import vn.tnc.data.api.model.response.User;
 import vn.tnc.tncframework.R;
@@ -29,6 +34,8 @@ import vn.tnc.tncframework.ui.view.UserListView;
  * Created by USER on 5/20/2015.
  */
 public class UserListFragment extends BaseFragment implements UserListView{
+
+
     @InjectView(R.id.pbLoading)
     ProgressBar pbLoading;
     @InjectView(R.id.llErrorLoadUsers)
@@ -39,7 +46,8 @@ public class UserListFragment extends BaseFragment implements UserListView{
     TextView tvErrorLoadUsers;
     @InjectView(R.id.rvUsers)
     RecyclerView rvUsers;
-
+    @InjectView(R.id.srlUsers)
+    SwipeRefreshLayout srlUsers;
     @Inject
     UserListPresenter userListPresenter;
 
@@ -96,6 +104,30 @@ public class UserListFragment extends BaseFragment implements UserListView{
         final StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         rvUsers.setLayoutManager(staggeredGridLayoutManager);
         rvUsers.setAdapter(usersAdapter);
+        srlUsers.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                setRefreshed();
+            }
+        });
+
+        usersAdapter.setOnItemClickListener(new UsersAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClicked(User user, ImageView imgView) {
+                Toast.makeText(getActivity(), "Click on " + user.login, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    @OnClick(R.id.btnRetryLoadUsers)
+    public void onClickButtonRetry(){
+        userListPresenter.resume();
+    }
+
+    private void setRefreshed(){
+        if(srlUsers.isRefreshing()){
+            srlUsers.setRefreshing(false);
+        }
     }
 
     @Override

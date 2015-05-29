@@ -1,7 +1,10 @@
 package vn.tnc.tncframework.ui.activities;
 
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
+import android.view.View;
 
 
 import javax.inject.Inject;
@@ -26,6 +29,8 @@ public class UsersActivity extends BaseActivity implements HasComponent<UserComp
     private UserComponent userComponent;
     @InjectView(R.id.toolbar)
     Toolbar toolbar;
+    @InjectView(R.id.drawerLayout)
+    DrawerLayout drawerLayout;
 
     @Inject
     OttoBus bus;
@@ -51,7 +56,12 @@ public class UsersActivity extends BaseActivity implements HasComponent<UserComp
         setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(R.drawable.menu_icon);
         toolbar.setTitle("List");
-
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                drawerLayout.openDrawer(Gravity.START);
+            }
+        });
         fragmentNavigator = FragmentNavigator.create(this, R.id.flContent);
         if(savedInstanceState == null){
             fragmentNavigator.showScreen(new UserListFragment(), false);
