@@ -88,8 +88,8 @@ public class UsersAdapter extends RecyclerTypeAdapter<User, UsersAdapter.ViewHol
                         @Override
                         public boolean onPreDraw() {
                             ivAvatar.getViewTreeObserver().removeOnPreDrawListener(this);
-                            final int height = ivAvatar.getMeasuredHeight();
-                            final int width = ivAvatar.getMeasuredWidth();
+                            //final int height = ivAvatar.getMeasuredHeight();
+                            //int width = ivAvatar.getMeasuredWidth();
                             ivAvatar.setImageBitmap(bitmap);
                             return true;
                         }
