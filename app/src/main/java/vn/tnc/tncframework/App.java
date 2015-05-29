@@ -6,6 +6,9 @@ import vn.tnc.core.BaseApp;
 import vn.tnc.core.di.components.ApplicationComponent;
 import vn.tnc.core.di.components.DaggerApplicationComponent;
 import vn.tnc.core.di.modules.ApplicationModule;
+import vn.tnc.core.di.modules.UtilModule;
+import vn.tnc.data.DataModule;
+import vn.tnc.data.api.ApiModule;
 
 /**
  * Created by USER on 5/20/2015.
@@ -26,6 +29,9 @@ public class App extends BaseApp{
     private void initInjector(){
         applicationComponent = DaggerApplicationComponent.builder()
                 .applicationModule(new ApplicationModule(this))
+                .utilModule(new UtilModule())
+                .dataModule(new DataModule())
+                .apiModule(new ApiModule())
                 .build();
     }
 
