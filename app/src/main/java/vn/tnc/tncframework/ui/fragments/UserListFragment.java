@@ -16,6 +16,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.otto.Bus;
+
 import java.util.List;
 
 import javax.inject.Inject;
@@ -25,6 +27,7 @@ import butterknife.OnClick;
 import vn.tnc.core.base.mvp.BaseFragment;
 import vn.tnc.data.api.model.response.User;
 import vn.tnc.tncframework.R;
+import vn.tnc.tncframework.bus.Event;
 import vn.tnc.tncframework.presenter.UserListPresenter;
 import vn.tnc.tncframework.ui.activities.UsersActivity;
 import vn.tnc.tncframework.ui.adapters.UsersAdapter;
@@ -53,6 +56,8 @@ public class UserListFragment extends BaseFragment implements UserListView{
 
     @Inject
     UsersAdapter usersAdapter;
+    @Inject
+    Bus bus;
     @Override
     public void showLoading() {
         pbLoading.setVisibility(View.VISIBLE);
@@ -93,8 +98,14 @@ public class UserListFragment extends BaseFragment implements UserListView{
     @Override
     public void onResume() {
         super.onResume();
-
+        bus.register(this);
         userListPresenter.resume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        bus.unregister(this);
     }
 
     @Override
@@ -114,7 +125,8 @@ public class UserListFragment extends BaseFragment implements UserListView{
         usersAdapter.setOnItemClickListener(new UsersAdapter.OnItemClickListener() {
             @Override
             public void onItemClicked(User user, ImageView imgView) {
-                Toast.makeText(getActivity(), "Click on " + user.login, Toast.LENGTH_SHORT).show();
+
+                bus.post(Event.USER_DETAIL.withExtras(user));
             }
         });
     }
