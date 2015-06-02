@@ -10,10 +10,8 @@ import com.squareup.picasso.Picasso;
 import javax.inject.Singleton;
 
 import dagger.Component;
-import vn.tnc.core.base.mvp.BaseActivity;
 import vn.tnc.core.di.modules.ApplicationModule;
 import vn.tnc.core.di.modules.UtilModule;
-import vn.tnc.core.utils.OttoBus;
 import vn.tnc.data.DataModule;
 import vn.tnc.data.api.ApiService;
 
