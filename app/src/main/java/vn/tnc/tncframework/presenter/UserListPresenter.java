@@ -10,6 +10,7 @@ import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import timber.log.Timber;
 import vn.tnc.core.base.mvp.BasePresenter;
 import vn.tnc.data.api.ApiService;
 import vn.tnc.data.api.model.response.User;
@@ -37,19 +38,23 @@ public class UserListPresenter implements BasePresenter{
 
     @Override
     public void resume() {
-        Log.i(TAG, "resume");
+
         userListView.showLoading();
         userListView.hideRetry();
         getListUser();
     }
 
-
+    public void retry(){
+        userListView.hideRetry();
+        userListView.showLoading();
+        getListUser();
+    }
 
     private void getListUser(){
         subscription = apiService.getListUser()
             .subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
-            .compose(RxHelper.<List<User>>applySchedulers())
+            //.compose(RxHelper.<List<User>>applySchedulers())
             .subscribe(new rx.Observer<List<User>>() {
                 @Override
                 public void onCompleted() {
@@ -59,15 +64,15 @@ public class UserListPresenter implements BasePresenter{
 
                 @Override
                 public void onError(Throwable e) {
-                    e.printStackTrace();
+                    Timber.e(e, "got error when load list user");
                     userListView.hideLoading();
                     userListView.showRetry();
-                    userListView.showError("Failed load data");
+                    userListView.showError("load data failed");
                 }
 
                 @Override
                 public void onNext(List<User> users) {
-                    Log.i(TAG, "List size: " + users.size());
+                    Timber.i("List user", users);
                     userListView.renderUserList(users);
 
                 }

@@ -134,8 +134,8 @@ public class UserListFragment extends BaseFragment implements UserListView{
     }
 
     @OnClick(R.id.btnRetryLoadUsers)
-    public void onClickButtonRetry(){
-        userListPresenter.resume();
+    void onClickButtonRetry(){
+        userListPresenter.retry();
     }
 
     private void setRefreshed(){
