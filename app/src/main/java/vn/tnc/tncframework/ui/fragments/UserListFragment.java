@@ -6,6 +6,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.otto.Bus;
+
 import java.util.List;
 
 import javax.inject.Inject;
@@ -25,6 +28,7 @@ import butterknife.OnClick;
 import vn.tnc.core.base.mvp.BaseFragment;
 import vn.tnc.data.api.model.response.User;
 import vn.tnc.tncframework.R;
+import vn.tnc.tncframework.bus.Event;
 import vn.tnc.tncframework.presenter.UserListPresenter;
 import vn.tnc.tncframework.ui.activities.UsersActivity;
 import vn.tnc.tncframework.ui.adapters.UsersAdapter;
@@ -48,11 +52,15 @@ public class UserListFragment extends BaseFragment implements UserListView{
     RecyclerView rvUsers;
     @InjectView(R.id.srlUsers)
     SwipeRefreshLayout srlUsers;
-    @Inject
-    UserListPresenter userListPresenter;
 
     @Inject
+    UserListPresenter userListPresenter;
+    @Inject
     UsersAdapter usersAdapter;
+    @Inject
+    Bus bus;
+    private static final String TAG = UserListFragment.class.getSimpleName();
+
     @Override
     public void showLoading() {
         pbLoading.setVisibility(View.VISIBLE);
@@ -93,8 +101,14 @@ public class UserListFragment extends BaseFragment implements UserListView{
     @Override
     public void onResume() {
         super.onResume();
-
+        bus.register(this);
         userListPresenter.resume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        bus.unregister(this);
     }
 
     @Override
@@ -114,14 +128,14 @@ public class UserListFragment extends BaseFragment implements UserListView{
         usersAdapter.setOnItemClickListener(new UsersAdapter.OnItemClickListener() {
             @Override
             public void onItemClicked(User user, ImageView imgView) {
-                Toast.makeText(getActivity(), "Click on " + user.login, Toast.LENGTH_SHORT).show();
+                bus.post(Event.USER_DETAIL.withExtras(user));
             }
         });
     }
 
     @OnClick(R.id.btnRetryLoadUsers)
-    public void onClickButtonRetry(){
-        userListPresenter.resume();
+    void onClickButtonRetry(){
+        userListPresenter.retry();
     }
 
     private void setRefreshed(){

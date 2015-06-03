@@ -2,6 +2,7 @@ package vn.tnc.tncframework;
 
 import android.content.Context;
 
+import timber.log.Timber;
 import vn.tnc.core.BaseApp;
 import vn.tnc.core.di.components.ApplicationComponent;
 import vn.tnc.core.di.components.DaggerApplicationComponent;
@@ -22,7 +23,7 @@ public class App extends BaseApp{
 
     @Override public void onCreate() {
         super.onCreate();
-
+        Timber.plant(new Timber.DebugTree());
         initInjector();
     }
 
