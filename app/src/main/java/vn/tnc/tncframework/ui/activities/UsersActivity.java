@@ -15,6 +15,7 @@ import com.squareup.otto.Subscribe;
 import javax.inject.Inject;
 
 import butterknife.InjectView;
+import timber.log.Timber;
 import vn.tnc.core.base.mvp.BaseActivity;
 import vn.tnc.core.base.navigator.FragmentNavigator;
 import vn.tnc.core.di.HasComponent;
@@ -93,7 +94,7 @@ public class UsersActivity extends BaseActivity implements HasComponent<UserComp
 
     @Subscribe
     public void onEvent(Event event){
-        Log.i(TAG, "onEvent " + event);
+        Timber.i("onEvent", event);
         switch (event){
             case USER_DETAIL:
                 User user = (User)event.extras;
