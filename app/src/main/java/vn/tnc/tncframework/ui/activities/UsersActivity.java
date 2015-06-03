@@ -2,6 +2,7 @@ package vn.tnc.tncframework.ui.activities;
 
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
@@ -66,7 +67,6 @@ public class UsersActivity extends BaseActivity implements HasComponent<UserComp
 
         setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(R.drawable.menu_icon);
-        toolbar.setTitle("List");
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
