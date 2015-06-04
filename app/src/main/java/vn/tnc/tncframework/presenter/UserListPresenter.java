@@ -54,7 +54,6 @@ public class UserListPresenter implements BasePresenter{
         subscription = apiService.getListUser()
             .subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
-            //.compose(RxHelper.<List<User>>applySchedulers())
             .subscribe(new rx.Observer<List<User>>() {
                 @Override
                 public void onCompleted() {

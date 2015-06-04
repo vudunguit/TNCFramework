@@ -127,7 +127,7 @@ public class UserListFragment extends BaseFragment implements UserListView{
 
         usersAdapter.setOnItemClickListener(new UsersAdapter.OnItemClickListener() {
             @Override
-            public void onItemClicked(User user, ImageView imgView) {
+            public void onItemClicked(User user, ImageView imgView, float touchedX, float touchedY) {
                 bus.post(Event.USER_DETAIL.withExtras(user));
             }
         });

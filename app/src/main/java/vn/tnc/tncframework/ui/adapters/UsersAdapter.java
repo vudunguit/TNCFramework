@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -52,15 +53,27 @@ public class UsersAdapter extends RecyclerTypeAdapter<User, UsersAdapter.ViewHol
         holder.ivAvatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(onItemClickListener != null){
-                    onItemClickListener.onItemClicked(getItem(position), holder.ivAvatar);
+                if (onItemClickListener != null) {
+                    //onItemClickListener.onItemClicked(getItem(position), holder.ivAvatar);
                 }
+            }
+        });
+
+        holder.ivAvatar.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if(motionEvent.getAction() == MotionEvent.ACTION_UP && motionEvent.getAction() != MotionEvent.ACTION_MOVE){
+                    if(onItemClickListener != null){
+                        onItemClickListener.onItemClicked(getItem(position), holder.ivAvatar, motionEvent.getX(), motionEvent.getY());
+                    }
+                }
+                return true;
             }
         });
     }
 
     public interface OnItemClickListener{
-        void onItemClicked(User user, ImageView imgView);
+        void onItemClicked(User user, ImageView imgView, float touchedX, float touchedY);
     }
 
     public final class ViewHolder extends RecyclerView.ViewHolder{

@@ -6,10 +6,9 @@
     android:layout_height="wrap_content"
     android:padding="3dp">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:gravity="center_horizontal">
 
         <vn.tnc.tncframework.ui.utils.AspectRatioImageView
@@ -18,6 +17,7 @@
             android:layout_height="wrap_content"
             android:clickable="false"
             tools:src="#f00"
+            android:layout_centerInParent="true"
             tools:ignore="ContentDescription"
             app:heightRatio="2"
             android:scaleType="centerCrop"
@@ -31,7 +31,8 @@
             android:padding="6dp"
             android:ellipsize="end"
             android:textSize="22sp"
-            android:background="@color/gray"
+            android:background="#80FFFFFF"
+            android:layout_alignParentBottom="true"
             tools:text="Login Name" />
-    </LinearLayout>
+    </RelativeLayout>
 </android.support.v7.widget.CardView>
