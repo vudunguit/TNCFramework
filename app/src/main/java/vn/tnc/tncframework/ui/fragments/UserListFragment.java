@@ -114,7 +114,6 @@ public class UserListFragment extends BaseFragment implements UserListView{
     @Override
     protected void onInjected() {
         userListPresenter.setView(this);
-
         final StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         rvUsers.setLayoutManager(staggeredGridLayoutManager);
         rvUsers.setAdapter(usersAdapter);

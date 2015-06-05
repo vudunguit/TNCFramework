@@ -1,8 +1,10 @@
 package vn.tnc.tncframework.ui.activities;
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
@@ -37,6 +39,7 @@ import vn.tnc.tncframework.ui.fragments.UserListFragment;
 public class UsersActivity extends BaseActivity implements HasComponent<UserComponent>{
     private FragmentNavigator fragmentNavigator;
     private UserComponent userComponent;
+    private ActionBarDrawerToggle mActionBarToggle;
     @InjectView(R.id.toolbar)
     Toolbar toolbar;
     @InjectView(R.id.drawerLayout)
@@ -65,19 +68,13 @@ public class UsersActivity extends BaseActivity implements HasComponent<UserComp
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setSupportActionBar(toolbar);
-        toolbar.setNavigationIcon(R.drawable.menu_icon);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                drawerLayout.openDrawer(Gravity.START);
-            }
-        });
+        setUpActionBarToolbar();
+
         fragmentNavigator = FragmentNavigator.create(this, R.id.flContent);
         if(savedInstanceState == null){
             fragmentNavigator.showScreen(new UserListFragment(), false);
+            setTitle("List");
         }
-
     }
 
     @Override
@@ -99,14 +96,54 @@ public class UsersActivity extends BaseActivity implements HasComponent<UserComp
             case USER_DETAIL:
                 User user = (User)event.extras;
                 fragmentNavigator.showScreen(UserDetailFragment.newInstance(user.login), true);
+                setTitle(user.login);
                 break;
         }
     }
 
+    private Fragment getCurrentFragment(){
+         return getSupportFragmentManager().findFragmentById(R.id.flContent);
+    }
+
+    private void setUpActionBarToolbar(){
+        setSupportActionBar(toolbar);
+        toolbar.setNavigationIcon(R.drawable.menu_icon);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Fragment fragment = getCurrentFragment();
+                if (fragment instanceof UserListFragment) {
+                    drawerLayout.openDrawer(Gravity.START);
+                } else {
+                    onBackPressed();
+                }
+            }
+        });
+
+    }
+
+    private void setTitle(String title){
+        getSupportActionBar().setTitle(title);
+    }
+
+
+
     @Override
     public void onBackPressed() {
-        if(!fragmentNavigator.navigateBack()) {
+        if(isNavDrawerOpen()){
+            closeNavDrawer();
+        }else if(!fragmentNavigator.navigateBack()) {
             super.onBackPressed();
+        }
+    }
+
+    private boolean isNavDrawerOpen(){
+        return drawerLayout != null && drawerLayout.isDrawerOpen(Gravity.START);
+    }
+
+    private void closeNavDrawer(){
+        if(drawerLayout != null){
+            drawerLayout.closeDrawer(Gravity.START);
         }
     }
 
