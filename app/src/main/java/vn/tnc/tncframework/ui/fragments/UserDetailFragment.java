@@ -1,5 +1,6 @@
 package vn.tnc.tncframework.ui.fragments;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -19,6 +20,7 @@ import vn.tnc.data.api.model.response.User;
 import vn.tnc.tncframework.R;
 import vn.tnc.tncframework.presenter.UserDetailPresenter;
 import vn.tnc.tncframework.ui.activities.UsersActivity;
+import vn.tnc.tncframework.ui.utils.OnFragmentInteractionListener;
 import vn.tnc.tncframework.ui.view.UserDetailView;
 
 /**
@@ -51,6 +53,16 @@ public class UserDetailFragment extends BaseFragment implements UserDetailView{
         return fragment;
     }
 
+    private OnFragmentInteractionListener mOnInterationListener;
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mOnInterationListener = (OnFragmentInteractionListener) activity;
+        }catch (ClassCastException e){
+            throw new ClassCastException(activity.toString() + "must implement OnFragmentInteractionListener");
+        }
+    }
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -65,6 +77,12 @@ public class UserDetailFragment extends BaseFragment implements UserDetailView{
         if(args != null) {
             mUsername = args.getString(KEY_USERNAME);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mOnInterationListener.showDrawerToggle(false);
     }
 
     @Override

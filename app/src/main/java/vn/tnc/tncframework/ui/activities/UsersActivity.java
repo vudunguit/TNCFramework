@@ -8,6 +8,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -32,14 +33,15 @@ import vn.tnc.tncframework.di.components.DaggerUserComponent;
 import vn.tnc.tncframework.di.components.UserComponent;
 import vn.tnc.tncframework.ui.fragments.UserDetailFragment;
 import vn.tnc.tncframework.ui.fragments.UserListFragment;
+import vn.tnc.tncframework.ui.utils.OnFragmentInteractionListener;
 
 /**
  * Created by USER on 5/20/2015.
  */
-public class UsersActivity extends BaseActivity implements HasComponent<UserComponent>{
+public class UsersActivity extends BaseActivity implements HasComponent<UserComponent>, OnFragmentInteractionListener{
     private FragmentNavigator fragmentNavigator;
     private UserComponent userComponent;
-    private ActionBarDrawerToggle mActionBarToggle;
+    public ActionBarDrawerToggle mActionBarToggle;
     @InjectView(R.id.toolbar)
     Toolbar toolbar;
     @InjectView(R.id.drawerLayout)
@@ -69,7 +71,7 @@ public class UsersActivity extends BaseActivity implements HasComponent<UserComp
         super.onCreate(savedInstanceState);
 
         setUpActionBarToolbar();
-
+        setUpNavigationDrawer();
         fragmentNavigator = FragmentNavigator.create(this, R.id.flContent);
         if(savedInstanceState == null){
             fragmentNavigator.showScreen(new UserListFragment(), false);
@@ -101,6 +103,11 @@ public class UsersActivity extends BaseActivity implements HasComponent<UserComp
         }
     }
 
+    @Override
+    public void showDrawerToggle(boolean isShow) {
+        mActionBarToggle.setDrawerIndicatorEnabled(isShow);
+    }
+
     private Fragment getCurrentFragment(){
          return getSupportFragmentManager().findFragmentById(R.id.flContent);
     }
@@ -108,6 +115,7 @@ public class UsersActivity extends BaseActivity implements HasComponent<UserComp
     private void setUpActionBarToolbar(){
         setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(R.drawable.menu_icon);
+        /*
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -119,7 +127,26 @@ public class UsersActivity extends BaseActivity implements HasComponent<UserComp
                 }
             }
         });
+        */
 
+
+    }
+
+    private void setUpNavigationDrawer(){
+        mActionBarToggle = new ActionBarDrawerToggle(UsersActivity.this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close){
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+            }
+        };
+        drawerLayout.setDrawerListener(mActionBarToggle);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     private void setTitle(String title){
@@ -127,6 +154,23 @@ public class UsersActivity extends BaseActivity implements HasComponent<UserComp
     }
 
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case android.R.id.home:
+                if(mActionBarToggle.isDrawerIndicatorEnabled()){
+                    return mActionBarToggle.onOptionsItemSelected(item);
+                }else{
+                    onBackPressed();
+                    return true;
+                }
+            default:
+                return super.onOptionsItemSelected(item);
+
+
+        }
+
+    }
 
     @Override
     public void onBackPressed() {
