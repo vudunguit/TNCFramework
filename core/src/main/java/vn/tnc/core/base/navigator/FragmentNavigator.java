@@ -95,6 +95,10 @@ public class FragmentNavigator {
         backStack.pop();
     }
 
+    public boolean isEmptyStack(){
+        return (backStack == null || backStack.isEmpty());
+    }
+
     public boolean navigateBack() {
         if (backStack == null || backStack.isEmpty()) {
             return false;

@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -19,6 +20,7 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import timber.log.Timber;
 import vn.tnc.core.view.adapters.RecyclerTypeAdapter;
 import vn.tnc.data.api.model.response.User;
 import vn.tnc.tncframework.R;
@@ -52,15 +54,27 @@ public class UsersAdapter extends RecyclerTypeAdapter<User, UsersAdapter.ViewHol
         holder.ivAvatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(onItemClickListener != null){
-                    onItemClickListener.onItemClicked(getItem(position), holder.ivAvatar);
+                if (onItemClickListener != null) {
+                    //onItemClickListener.onItemClicked(getItem(position), holder.ivAvatar);
                 }
+            }
+        });
+
+        holder.ivAvatar.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if(motionEvent.getAction() == MotionEvent.ACTION_UP && motionEvent.getAction() != MotionEvent.ACTION_MOVE){
+                    if(onItemClickListener != null){
+                        onItemClickListener.onItemClicked(getItem(position), holder.ivAvatar, motionEvent.getX(), motionEvent.getY());
+                    }
+                }
+                return true;
             }
         });
     }
 
     public interface OnItemClickListener{
-        void onItemClicked(User user, ImageView imgView);
+        void onItemClicked(User user, ImageView imgView, float touchedX, float touchedY);
     }
 
     public final class ViewHolder extends RecyclerView.ViewHolder{
@@ -77,6 +91,7 @@ public class UsersAdapter extends RecyclerTypeAdapter<User, UsersAdapter.ViewHol
 
         public void bind(User user, final Picasso picasso) {
             tvLogin.setText(user.login);
+
             picasso.load(user.avatar_url).into(new Target() {
                 @Override
                 public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
@@ -88,8 +103,6 @@ public class UsersAdapter extends RecyclerTypeAdapter<User, UsersAdapter.ViewHol
                         @Override
                         public boolean onPreDraw() {
                             ivAvatar.getViewTreeObserver().removeOnPreDrawListener(this);
-                            //final int height = ivAvatar.getMeasuredHeight();
-                            //int width = ivAvatar.getMeasuredWidth();
                             ivAvatar.setImageBitmap(bitmap);
                             return true;
                         }
@@ -112,12 +125,15 @@ public class UsersAdapter extends RecyclerTypeAdapter<User, UsersAdapter.ViewHol
             Transformation transformation = new Transformation() {
                 @Override
                 public Bitmap transform(Bitmap source) {
-                    int targetWidth = ivAvatar.getWidth();
+                    //int targetWidth = ivAvatar.getWidth();
                     float aspecRatio = source.getHeight() / (float)source.getWidth();
                     ivAvatar.setHeightRatio(aspecRatio);
                     //int targetHeight = (int)(targetWidth * aspecRatio);
-                    int targetHeight = source.getHeight();
-                    Bitmap result = Bitmap.createScaledBitmap(source, targetWidth, targetHeight, false);
+                    //int targetHeight = source.getHeight();
+                    final int width = ivAvatar.getMeasuredWidth();
+                    final int height = ivAvatar.getMeasuredHeight();
+                    Bitmap result = Bitmap.createScaledBitmap(source, width, height, false);
+
                     if(result != source){
                         //Same bitmap is returned if sizes are the same
                         source.recycle();

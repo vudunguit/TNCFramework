@@ -1,10 +1,14 @@
 package vn.tnc.tncframework.ui.activities;
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -15,6 +19,7 @@ import com.squareup.otto.Subscribe;
 import javax.inject.Inject;
 
 import butterknife.InjectView;
+import timber.log.Timber;
 import vn.tnc.core.base.mvp.BaseActivity;
 import vn.tnc.core.base.navigator.FragmentNavigator;
 import vn.tnc.core.di.HasComponent;
@@ -28,11 +33,12 @@ import vn.tnc.tncframework.di.components.DaggerUserComponent;
 import vn.tnc.tncframework.di.components.UserComponent;
 import vn.tnc.tncframework.ui.fragments.UserDetailFragment;
 import vn.tnc.tncframework.ui.fragments.UserListFragment;
+import vn.tnc.tncframework.ui.utils.OnFragmentInteractionListener;
 
 /**
  * Created by USER on 5/20/2015.
  */
-public class UsersActivity extends BaseActivity implements HasComponent<UserComponent>{
+public class UsersActivity extends BaseActivity implements HasComponent<UserComponent>, OnFragmentInteractionListener{
     private FragmentNavigator fragmentNavigator;
     private UserComponent userComponent;
     @InjectView(R.id.toolbar)
@@ -63,20 +69,19 @@ public class UsersActivity extends BaseActivity implements HasComponent<UserComp
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setSupportActionBar(toolbar);
-        toolbar.setNavigationIcon(R.drawable.menu_icon);
-        toolbar.setTitle("List");
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                drawerLayout.openDrawer(Gravity.START);
-            }
-        });
+        setUpActionBarToolbar();
+
         fragmentNavigator = FragmentNavigator.create(this, R.id.flContent);
         if(savedInstanceState == null){
             fragmentNavigator.showScreen(new UserListFragment(), false);
+            setTitle("List");
         }
+    }
 
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        setUpNavigationDrawer();
     }
 
     @Override
@@ -93,19 +98,110 @@ public class UsersActivity extends BaseActivity implements HasComponent<UserComp
 
     @Subscribe
     public void onEvent(Event event){
-        Log.i(TAG, "onEvent " + event);
+        Timber.i("onEvent", event);
         switch (event){
             case USER_DETAIL:
                 User user = (User)event.extras;
                 fragmentNavigator.showScreen(UserDetailFragment.newInstance(user.login), true);
+                setTitle(user.login);
                 break;
         }
     }
 
     @Override
+    public void showDrawerToggle(boolean isShow) {
+
+        if(isShow) {
+            toolbar.setNavigationIcon(R.drawable.menu_icon);
+        }else{
+            toolbar.setNavigationIcon(R.drawable.ic_up);
+        }
+
+    }
+
+    private void setUpActionBarToolbar(){
+        if(toolbar != null) {
+            setSupportActionBar(toolbar);
+        }
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    private void setUpNavigationDrawer() {
+
+        toolbar.setNavigationIcon(R.drawable.menu_icon);
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(fragmentNavigator.isEmptyStack()) {
+                    drawerLayout.openDrawer(Gravity.START);
+                }else{
+                    onBackPressed();
+                }
+            }
+        });
+
+        drawerLayout.setDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+
+            }
+        });
+        //populate the nav drawer with the correct items
+        populateNavDrawer();
+
+
+    }
+
+    private void populateNavDrawer(){
+        // setup item list nav drawer
+        //...
+
+        createNavDrawerItems();
+
+    }
+
+    private void createNavDrawerItems(){
+        // bind data nav drawer to drawer view
+        // ...
+    }
+
+    private void setTitle(String title){
+        getSupportActionBar().setTitle(title);
+    }
+
+    @Override
     public void onBackPressed() {
-        if(!fragmentNavigator.navigateBack()) {
+        if(isNavDrawerOpen()){
+            closeNavDrawer();
+        }else if(!fragmentNavigator.navigateBack()) {
             super.onBackPressed();
+        }
+    }
+
+    private boolean isNavDrawerOpen(){
+        return drawerLayout != null && drawerLayout.isDrawerOpen(Gravity.START);
+    }
+
+    private void closeNavDrawer(){
+        if(drawerLayout != null){
+            drawerLayout.closeDrawer(Gravity.START);
         }
     }
 

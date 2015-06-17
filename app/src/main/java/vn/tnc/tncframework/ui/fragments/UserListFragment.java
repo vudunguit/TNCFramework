@@ -1,5 +1,6 @@
 package vn.tnc.tncframework.ui.fragments;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -32,6 +33,7 @@ import vn.tnc.tncframework.bus.Event;
 import vn.tnc.tncframework.presenter.UserListPresenter;
 import vn.tnc.tncframework.ui.activities.UsersActivity;
 import vn.tnc.tncframework.ui.adapters.UsersAdapter;
+import vn.tnc.tncframework.ui.utils.OnFragmentInteractionListener;
 import vn.tnc.tncframework.ui.view.UserListView;
 
 /**
@@ -91,6 +93,17 @@ public class UserListFragment extends BaseFragment implements UserListView{
         usersAdapter.changeDataSet(users);
     }
 
+    private OnFragmentInteractionListener mOnInterationListener;
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mOnInterationListener = (OnFragmentInteractionListener) activity;
+        }catch (ClassCastException e){
+            throw new ClassCastException(activity.toString() + "must implement OnFragmentInteractionListener");
+        }
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -101,6 +114,7 @@ public class UserListFragment extends BaseFragment implements UserListView{
     @Override
     public void onResume() {
         super.onResume();
+        mOnInterationListener.showDrawerToggle(true);
         bus.register(this);
         userListPresenter.resume();
     }
@@ -114,7 +128,6 @@ public class UserListFragment extends BaseFragment implements UserListView{
     @Override
     protected void onInjected() {
         userListPresenter.setView(this);
-
         final StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         rvUsers.setLayoutManager(staggeredGridLayoutManager);
         rvUsers.setAdapter(usersAdapter);
@@ -127,7 +140,7 @@ public class UserListFragment extends BaseFragment implements UserListView{
 
         usersAdapter.setOnItemClickListener(new UsersAdapter.OnItemClickListener() {
             @Override
-            public void onItemClicked(User user, ImageView imgView) {
+            public void onItemClicked(User user, ImageView imgView, float touchedX, float touchedY) {
                 bus.post(Event.USER_DETAIL.withExtras(user));
             }
         });

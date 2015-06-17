@@ -38,28 +38,23 @@ public class UserListPresenter implements BasePresenter{
 
     @Override
     public void resume() {
-
-        userListView.showLoading();
-        userListView.hideRetry();
         getListUser();
     }
 
     public void retry(){
-        userListView.hideRetry();
-        userListView.showLoading();
         getListUser();
     }
 
     private void getListUser(){
+        userListView.showLoading();
+        userListView.hideRetry();
         subscription = apiService.getListUser()
             .subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
-            //.compose(RxHelper.<List<User>>applySchedulers())
             .subscribe(new rx.Observer<List<User>>() {
                 @Override
                 public void onCompleted() {
                     userListView.hideLoading();
-                    userListView.hideRetry();
                 }
 
                 @Override
