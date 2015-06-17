@@ -41,7 +41,6 @@ import vn.tnc.tncframework.ui.utils.OnFragmentInteractionListener;
 public class UsersActivity extends BaseActivity implements HasComponent<UserComponent>, OnFragmentInteractionListener{
     private FragmentNavigator fragmentNavigator;
     private UserComponent userComponent;
-    public ActionBarDrawerToggle mActionBarToggle;
     @InjectView(R.id.toolbar)
     Toolbar toolbar;
     @InjectView(R.id.drawerLayout)
@@ -71,12 +70,18 @@ public class UsersActivity extends BaseActivity implements HasComponent<UserComp
         super.onCreate(savedInstanceState);
 
         setUpActionBarToolbar();
-        setUpNavigationDrawer();
+
         fragmentNavigator = FragmentNavigator.create(this, R.id.flContent);
         if(savedInstanceState == null){
             fragmentNavigator.showScreen(new UserListFragment(), false);
             setTitle("List");
         }
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        setUpNavigationDrawer();
     }
 
     @Override
@@ -105,71 +110,80 @@ public class UsersActivity extends BaseActivity implements HasComponent<UserComp
 
     @Override
     public void showDrawerToggle(boolean isShow) {
-        mActionBarToggle.setDrawerIndicatorEnabled(isShow);
-    }
 
-    private Fragment getCurrentFragment(){
-         return getSupportFragmentManager().findFragmentById(R.id.flContent);
+        if(isShow) {
+            toolbar.setNavigationIcon(R.drawable.menu_icon);
+        }else{
+            toolbar.setNavigationIcon(R.drawable.ic_up);
+        }
+
     }
 
     private void setUpActionBarToolbar(){
-        setSupportActionBar(toolbar);
-        toolbar.setNavigationIcon(R.drawable.menu_icon);
-        /*
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Fragment fragment = getCurrentFragment();
-                if (fragment instanceof UserListFragment) {
-                    drawerLayout.openDrawer(Gravity.START);
-                } else {
-                    onBackPressed();
-                }
-            }
-        });
-        */
-
-
-    }
-
-    private void setUpNavigationDrawer(){
-        mActionBarToggle = new ActionBarDrawerToggle(UsersActivity.this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close){
-            @Override
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-            }
-
-            @Override
-            public void onDrawerClosed(View drawerView) {
-                super.onDrawerClosed(drawerView);
-            }
-        };
-        drawerLayout.setDrawerListener(mActionBarToggle);
+        if(toolbar != null) {
+            setSupportActionBar(toolbar);
+        }
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
-    private void setTitle(String title){
-        getSupportActionBar().setTitle(title);
-    }
+    private void setUpNavigationDrawer() {
 
+        toolbar.setNavigationIcon(R.drawable.menu_icon);
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case android.R.id.home:
-                if(mActionBarToggle.isDrawerIndicatorEnabled()){
-                    return mActionBarToggle.onOptionsItemSelected(item);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(fragmentNavigator.isEmptyStack()) {
+                    drawerLayout.openDrawer(Gravity.START);
                 }else{
                     onBackPressed();
-                    return true;
                 }
-            default:
-                return super.onOptionsItemSelected(item);
+            }
+        });
+
+        drawerLayout.setDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+
+            }
+        });
+        //populate the nav drawer with the correct items
+        populateNavDrawer();
 
 
-        }
+    }
 
+    private void populateNavDrawer(){
+        // setup item list nav drawer
+        //...
+
+        createNavDrawerItems();
+
+    }
+
+    private void createNavDrawerItems(){
+        // bind data nav drawer to drawer view
+        // ...
+    }
+
+    private void setTitle(String title){
+        getSupportActionBar().setTitle(title);
     }
 
     @Override
